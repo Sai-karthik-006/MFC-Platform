@@ -6,4 +6,5 @@ export default registerAs('app', () => ({
   databaseUrl: process.env.DATABASE_URL,
   jwtSecret: process.env.JWT_SECRET,
   adminSecret: process.env.ADMIN_SECRET,
+  corsOrigin: process.env.CORS_ORIGIN || true,
 }));

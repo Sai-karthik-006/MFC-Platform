@@ -8,6 +8,7 @@ export const envSchema = z.object({
   DATABASE_URL: z.string().url(),
   JWT_SECRET: z.string().min(1),
   ADMIN_SECRET: z.string().min(1),
+  CORS_ORIGIN: z.string().optional(),
 });
 
 export type EnvConfig = z.infer<typeof envSchema>;
