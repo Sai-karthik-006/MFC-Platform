@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException, ConflictException, BadRequestException } from '@nestjs/common';
 import { PrismaService } from '../../database/prisma.service';
-import { CreateCategoryDto } from '../dto/create-category.dto';
-import { UpdateCategoryDto } from '../dto/update-category.dto';
+import { CreateCategoryDto } from './dto/create-category.dto';
+import { UpdateCategoryDto } from './dto/update-category.dto';
 
 @Injectable()
 export class CategoryService {
@@ -161,11 +161,23 @@ export class CategoryService {
       throw new NotFoundException('Category not found');
     }
 
-    await this.prisma.category.update({
+    const updated = await this.prisma.category.update({
       where: { id },
       data: { isActive: false },
+      select: {
+        id: true,
+        name: true,
+        slug: true,
+        description: true,
+        icon: true,
+        bannerImage: true,
+        displayOrder: true,
+        isActive: true,
+        createdAt: true,
+        updatedAt: true,
+      },
     });
 
-    return { success: true };
+    return updated;
   }
 }

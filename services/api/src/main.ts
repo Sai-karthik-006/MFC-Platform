@@ -3,7 +3,7 @@ import { AppModule } from './app.module';
 import { TransformInterceptor } from './common/interceptors/transform.interceptor';
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
 import { ValidationPipe } from './common/pipes/validation.pipe';
-import { configuration } from './config/configuration';
+import configuration from './config/configuration';
 import { API_PREFIX } from './common/constants';
 
 async function bootstrap() {

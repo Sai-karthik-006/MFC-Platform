@@ -6,7 +6,6 @@ import { TransformInterceptor } from '../../common/interceptors/transform.interc
 import { HttpExceptionFilter } from '../../common/filters/http-exception.filter';
 
 @Controller('categories')
-@UseInterceptors(TransformInterceptor)
 @UseFilters(HttpExceptionFilter)
 @UsePipes(new ValidationPipe({ whitelist: true, transform: true, forbidNonWhitelisted: true }))
 export class CategoryController {
