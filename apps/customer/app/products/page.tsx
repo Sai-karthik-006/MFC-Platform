@@ -216,10 +216,10 @@ export default function ProductsPage() {
                 href={`/products/${product.id}`}
                 name={product.name}
                 description={product.description ?? 'Delicious dish prepared with care.'}
-                price={typeof (product as unknown as Record<string, unknown>).price === 'number' ? Number((product as unknown as Record<string, unknown>).price) : 0}
-                isVeg={(product as unknown as Record<string, unknown>).isVeg as boolean}
-                isAvailable={(product as unknown as Record<string, unknown>).isAvailable as boolean}
-                isFeatured={(product as unknown as Record<string, unknown>).isFeatured as boolean}
+                price={product.price}
+                isVeg={product.isVeg}
+                isAvailable={product.isAvailable}
+                isFeatured={product.isFeatured}
               />
             ))}
           </div>
