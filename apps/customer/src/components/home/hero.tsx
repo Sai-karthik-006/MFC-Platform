@@ -1,6 +1,7 @@
 import { Section } from "../layout/section";
 import { Container } from "../layout/container";
 import { Button } from "../ui/button";
+import { Input } from "../ui/input";
 
 export function Hero() {
   return (
@@ -16,6 +17,16 @@ export function Hero() {
           <div className="mt-10 flex flex-wrap justify-center gap-4">
             <Button size="lg">Order Now</Button>
             <Button variant="outline" size="lg">Browse Menu</Button>
+          </div>
+          <div className="mt-8 w-full max-w-2xl">
+            <div className="hidden sm:flex gap-2">
+              <Input placeholder="Search for biryani, pizza, burgers..." className="flex-1" />
+              <Button>Search</Button>
+            </div>
+            <div className="flex sm:hidden flex-col gap-2">
+              <Input placeholder="Search for biryani, pizza, burgers..." />
+              <Button className="w-full">Search</Button>
+            </div>
           </div>
         </div>
       </Container>
