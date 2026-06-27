@@ -1,6 +1,7 @@
 import { Badge } from '../ui/badge';
 import { Button } from '../ui/button';
 import { Card, CardContent, CardFooter } from '../ui/card';
+import Link from 'next/link';
 
 interface ProductCardProps {
   id?: string;
@@ -10,6 +11,7 @@ interface ProductCardProps {
   isVeg?: boolean;
   isAvailable?: boolean;
   isFeatured?: boolean;
+  href?: string;
 }
 
 export function ProductCard({
@@ -20,8 +22,9 @@ export function ProductCard({
   isVeg = true,
   isAvailable = true,
   isFeatured = false,
+  href,
 }: ProductCardProps) {
-  return (
+  const cardContent = (
     <Card
       className="flex flex-col border-2 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:border-blue-300 hover:bg-gray-50/50"
       data-product-id={id}
@@ -54,6 +57,7 @@ export function ProductCard({
             size="sm"
             className="w-full transition-all duration-150"
             aria-label={`Add ${name} to cart`}
+            onClick={href ? (e) => { e.preventDefault(); e.stopPropagation(); } : undefined}
           >
             Add to Cart
           </Button>
@@ -65,4 +69,14 @@ export function ProductCard({
       </CardFooter>
     </Card>
   );
+
+  if (href) {
+    return (
+      <Link href={href} className="block">
+        {cardContent}
+      </Link>
+    );
+  }
+
+  return cardContent;
 }
