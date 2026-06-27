@@ -5,6 +5,27 @@ import { ProductCard } from '../product/product-card';
 import { Button } from '../ui/button';
 import { productService } from '../../services/product.service';
 
+function ProductCardSkeleton() {
+  return (
+    <div className="flex flex-col overflow-hidden rounded-lg border border-gray-200 bg-white">
+      <div className="aspect-[4/3] w-full animate-shimmer bg-gradient-to-r from-gray-200 via-gray-300 to-gray-200" />
+      <div className="flex-1 p-4">
+        <div className="mb-3 flex items-start justify-between">
+          <div className="h-5 w-12 animate-shimmer rounded-full bg-gray-200" />
+          <div className="h-5 w-16 animate-shimmer rounded-full bg-gray-200" />
+        </div>
+        <div className="h-5 w-3/4 animate-shimmer rounded bg-gray-200" />
+        <div className="mt-2 h-4 w-full animate-shimmer rounded bg-gray-200" />
+        <div className="mt-1 h-4 w-5/6 animate-shimmer rounded bg-gray-200" />
+      </div>
+      <div className="flex flex-col gap-3 p-4 pt-0">
+        <div className="h-6 w-16 animate-shimmer rounded bg-gray-200" />
+        <div className="h-9 w-full animate-shimmer rounded bg-gray-200" />
+      </div>
+    </div>
+  );
+}
+
 export function FeaturedProducts() {
   const { data, isLoading, isError, refetch } = useQuery({
     queryKey: ['products', 'featured'],
@@ -15,13 +36,18 @@ export function FeaturedProducts() {
     return (
       <Section padding="lg">
         <Container>
-          <div className="text-center mb-8">
-            <h2 className="text-2xl font-bold text-gray-900">Featured Products</h2>
-            <p className="mt-2 text-sm text-gray-500">Our most loved dishes</p>
+          <div className="mb-8 flex flex-col sm:flex-row sm:items-start sm:justify-between">
+            <div className="text-center sm:text-left">
+              <h2 className="text-2xl font-bold text-gray-900">Featured Products</h2>
+              <p className="mt-2 text-sm text-gray-500">Our most loved dishes</p>
+            </div>
+            <Button variant="ghost" size="sm" className="mt-4 sm:mt-0" disabled>
+              View All
+            </Button>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
             {Array.from({ length: 4 }).map((_, i) => (
-              <div key={i} className="h-64 bg-gray-200 animate-pulse rounded-lg" />
+              <ProductCardSkeleton key={i} />
             ))}
           </div>
         </Container>
@@ -33,11 +59,16 @@ export function FeaturedProducts() {
     return (
       <Section padding="lg">
         <Container>
-          <div className="text-center mb-8">
-            <h2 className="text-2xl font-bold text-gray-900">Featured Products</h2>
-            <p className="mt-2 text-sm text-gray-500">Our most loved dishes</p>
+          <div className="mb-8 flex flex-col sm:flex-row sm:items-start sm:justify-between">
+            <div className="text-center sm:text-left">
+              <h2 className="text-2xl font-bold text-gray-900">Featured Products</h2>
+              <p className="mt-2 text-sm text-gray-500">Our most loved dishes</p>
+            </div>
+            <Button variant="ghost" size="sm" className="mt-4 sm:mt-0" disabled>
+              View All
+            </Button>
           </div>
-          <div className="flex flex-col items-center justify-center py-12 text-center">
+          <div className="flex flex-col items-center justify-center px-4 py-16 text-center">
             <h3 className="text-lg font-semibold text-gray-900">Unable to load products</h3>
             <p className="mt-2 max-w-md text-sm text-gray-500">Please try again later.</p>
             <div className="mt-6">
@@ -55,11 +86,16 @@ export function FeaturedProducts() {
     return (
       <Section padding="lg">
         <Container>
-          <div className="text-center mb-8">
-            <h2 className="text-2xl font-bold text-gray-900">Featured Products</h2>
-            <p className="mt-2 text-sm text-gray-500">Our most loved dishes</p>
+          <div className="mb-8 flex flex-col sm:flex-row sm:items-start sm:justify-between">
+            <div className="text-center sm:text-left">
+              <h2 className="text-2xl font-bold text-gray-900">Featured Products</h2>
+              <p className="mt-2 text-sm text-gray-500">Our most loved dishes</p>
+            </div>
+            <Button variant="ghost" size="sm" className="mt-4 sm:mt-0" disabled>
+              View All
+            </Button>
           </div>
-          <div className="flex flex-col items-center justify-center py-12 text-center">
+          <div className="flex flex-col items-center justify-center px-4 py-16 text-center">
             <h3 className="text-lg font-semibold text-gray-900">No Products Available</h3>
             <p className="mt-2 max-w-md text-sm text-gray-500">Check back soon for our featured dishes.</p>
           </div>
@@ -71,22 +107,27 @@ export function FeaturedProducts() {
   return (
     <Section padding="lg">
       <Container>
-        <div className="text-center mb-8">
-          <h2 className="text-2xl font-bold text-gray-900">Featured Products</h2>
-          <p className="mt-2 text-sm text-gray-500">Our most loved dishes</p>
+        <div className="mb-8 flex flex-col sm:flex-row sm:items-start sm:justify-between">
+          <div className="text-center sm:text-left">
+            <h2 className="text-2xl font-bold text-gray-900">Featured Products</h2>
+            <p className="mt-2 text-sm text-gray-500">Our most loved dishes</p>
+          </div>
+          <Button variant="ghost" size="sm" className="mt-4 sm:mt-0" disabled>
+            View All
+          </Button>
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {products.map((product) => (
-<ProductCard
-               key={product.id}
-               id={product.id}
-               name={product.name}
-               description={product.description ?? 'Delicious dish prepared with care.'}
-               price={typeof (product as unknown as Record<string, unknown>).price === 'number' ? Number((product as unknown as Record<string, unknown>).price) : 0}
-               isVeg={(product as unknown as Record<string, unknown>).isVeg as boolean}
-               isAvailable={(product as unknown as Record<string, unknown>).isAvailable as boolean}
-               isFeatured={(product as unknown as Record<string, unknown>).isFeatured as boolean}
-             />
+            <ProductCard
+              key={product.id}
+              id={product.id}
+              name={product.name}
+              description={product.description ?? 'Delicious dish prepared with care.'}
+              price={typeof (product as unknown as Record<string, unknown>).price === 'number' ? Number((product as unknown as Record<string, unknown>).price) : 0}
+              isVeg={(product as unknown as Record<string, unknown>).isVeg as boolean}
+              isAvailable={(product as unknown as Record<string, unknown>).isAvailable as boolean}
+              isFeatured={(product as unknown as Record<string, unknown>).isFeatured as boolean}
+            />
           ))}
         </div>
       </Container>
