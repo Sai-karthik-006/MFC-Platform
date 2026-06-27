@@ -3,6 +3,8 @@ import type { ApiResponseType, Product } from '@mfc-platform/types';
 
 export interface ProductWithPrice extends Product {
   price: number;
+  images?: string[];
+  stock?: number;
 }
 
 export class ProductService {
