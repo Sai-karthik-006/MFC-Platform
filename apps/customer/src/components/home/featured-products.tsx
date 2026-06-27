@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { Section } from '../layout/section';
 import { Container } from '../layout/container';
-import { Card, CardContent, CardFooter } from '../ui/card';
+import { ProductCard } from '../product/product-card';
 import { Button } from '../ui/button';
 import { productService } from '../../services/product.service';
 
@@ -77,22 +77,16 @@ export function FeaturedProducts() {
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {products.map((product) => (
-            <Card key={product.id} className="flex flex-col">
-              <CardContent className="flex-1">
-                <h3 className="text-base font-semibold text-gray-900 leading-tight">{product.name}</h3>
-                <p className="mt-2 text-sm text-gray-500 line-clamp-2">
-                  {product.description ?? 'Delicious dish prepared with care.'}
-                </p>
-              </CardContent>
-              <CardFooter className="flex items-center justify-between">
-                <span className="text-lg font-bold text-gray-900">
-                  {typeof (product as unknown as Record<string, unknown>).price === 'number'
-                    ? `$${Number((product as unknown as Record<string, unknown>).price).toFixed(2)}`
-                    : 'N/A'}
-                </span>
-                <Button size="sm">Add to Cart</Button>
-              </CardFooter>
-            </Card>
+<ProductCard
+               key={product.id}
+               id={product.id}
+               name={product.name}
+               description={product.description ?? 'Delicious dish prepared with care.'}
+               price={typeof (product as unknown as Record<string, unknown>).price === 'number' ? Number((product as unknown as Record<string, unknown>).price) : 0}
+               isVeg={(product as unknown as Record<string, unknown>).isVeg as boolean}
+               isAvailable={(product as unknown as Record<string, unknown>).isAvailable as boolean}
+               isFeatured={(product as unknown as Record<string, unknown>).isFeatured as boolean}
+             />
           ))}
         </div>
       </Container>
