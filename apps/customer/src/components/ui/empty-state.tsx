@@ -1,6 +1,5 @@
 import * as React from "react";
 import { Button } from "./button";
-import { Skeleton } from "./skeleton";
 
 interface EmptyStateProps extends React.HTMLAttributes<HTMLDivElement> {
   title: string;

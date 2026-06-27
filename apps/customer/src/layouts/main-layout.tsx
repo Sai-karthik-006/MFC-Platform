@@ -2,9 +2,6 @@
 
 import * as React from "react";
 import { Navbar } from "../components/navigation/navbar";
-import { NavLink } from "../components/navigation/nav-link";
-import { Logo } from "../components/navigation/logo";
-import { Badge } from "../components/ui/badge";
 import { Container } from "../components/layout/container";
 
 interface MainLayoutProps {

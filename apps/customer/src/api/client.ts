@@ -1,5 +1,5 @@
 import { axiosClient } from '../lib/axios';
-import type { ApiResponseType, ApiErrorType } from '@mfc-platform/types';
+import type { ApiResponseType } from '@mfc-platform/types';
 
 export class ApiClient {
   async get<T>(endpoint: string): Promise<ApiResponseType<T>> {
