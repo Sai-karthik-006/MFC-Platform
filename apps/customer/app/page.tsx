@@ -1,7 +1,5 @@
+import { Hero } from "../src/components/home/hero";
+
 export default function Page() {
-  return (
-    <div>
-      <h1>Customer Application</h1>
-    </div>
-  );
+  return <Hero />;
 }
