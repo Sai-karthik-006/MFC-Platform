@@ -6,6 +6,10 @@ import { PrismaModule } from './database/prisma.module';
 import { CategoryModule } from './modules/category/category.module';
 import { ProductModule } from './modules/product/product.module';
 import { ProductVariantModule } from './modules/product-variant/product-variant.module';
+import { ProductImageModule } from './modules/product-image/product-image.module';
+import { OrderModule } from './modules/order/order.module';
+import { CateringModule } from './modules/catering/catering.module';
+import { HealthModule } from './modules/health/health.module';
 
 @Module({
   imports: [
@@ -18,6 +22,10 @@ import { ProductVariantModule } from './modules/product-variant/product-variant.
     CategoryModule,
     ProductModule,
     ProductVariantModule,
+    ProductImageModule,
+    OrderModule,
+    CateringModule,
+    HealthModule,
   ],
 })
 export class AppModule {}

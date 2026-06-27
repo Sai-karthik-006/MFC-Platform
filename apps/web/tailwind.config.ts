@@ -1,4 +1,4 @@
-import type { Config } from "tailwindcss";
+import Config from "tailwindcss";
 
 export default {
   content: [
@@ -11,4 +11,4 @@ export default {
     extend: {}
   },
   plugins: []
-} satisfies Config;
+};

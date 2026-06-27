@@ -1,12 +1,9 @@
-import { Controller, Get, Post, Patch, Delete, Body, Param, UseFilters, UsePipes, ValidationPipe, ParseUUIDPipe } from '@nestjs/common';
+import { Controller, Get, Post, Patch, Delete, Body, Param, ParseUUIDPipe } from '@nestjs/common';
 import { ProductVariantService } from './product-variant.service';
 import { CreateProductVariantDto } from './dto/create-product-variant.dto';
 import { UpdateProductVariantDto } from './dto/update-product-variant.dto';
-import { HttpExceptionFilter } from '../../common/filters/http-exception.filter';
 
 @Controller('products/:productId/variants')
-@UseFilters(HttpExceptionFilter)
-@UsePipes(new ValidationPipe({ whitelist: true, transform: true, forbidNonWhitelisted: true }))
 export class ProductVariantController {
   constructor(private readonly productVariantService: ProductVariantService) {}
 
