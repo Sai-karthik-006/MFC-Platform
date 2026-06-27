@@ -27,6 +27,13 @@ export class ProductService {
     const response = await apiClient.get<ApiResponseType<Product>>(`/api/v1/products/${id}`);
     return response.data as ProductWithPrice;
   }
+
+  async getProductsByCategory(categoryId: string, excludeId?: string): Promise<ProductWithPrice[]> {
+    const response = await apiClient.get<ApiResponseType<Product[]>>('/api/v1/products');
+    return response.data
+      .filter(p => p.category.id === categoryId && p.id !== excludeId && p.isAvailable)
+      .slice(0, 4) as ProductWithPrice[];
+  }
 }
 
 export const productService = new ProductService();
