@@ -1,7 +1,11 @@
+'use client';
+
+import { useState } from 'react';
 import { Badge } from '../ui/badge';
 import { Button } from '../ui/button';
 import { Card, CardContent, CardFooter } from '../ui/card';
 import Link from 'next/link';
+import { useCart } from '../../hooks/use-cart';
 
 interface ProductCardProps {
   id?: string;
@@ -24,6 +28,25 @@ export function ProductCard({
   isFeatured = false,
   href,
 }: ProductCardProps) {
+  const { addItem } = useCart();
+  const [added, setAdded] = useState(false);
+
+  const handleAddToCart = (e?: React.MouseEvent) => {
+    e?.preventDefault();
+    e?.stopPropagation();
+    if (id) {
+      addItem({
+        productId: id,
+        name,
+        price,
+        quantity: 1,
+        isVeg,
+      });
+      setAdded(true);
+      setTimeout(() => setAdded(false), 1000);
+    }
+  };
+
   const cardContent = (
     <Card
       className="flex flex-col border-2 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:border-blue-300 hover:bg-gray-50/50"
@@ -57,9 +80,9 @@ export function ProductCard({
             size="sm"
             className="w-full transition-all duration-150"
             aria-label={`Add ${name} to cart`}
-            onClick={href ? (e) => { e.preventDefault(); e.stopPropagation(); } : undefined}
+            onClick={handleAddToCart}
           >
-            Add to Cart
+            {added ? 'Added ✓' : 'Add to Cart'}
           </Button>
         ) : (
           <Button size="sm" disabled className="w-full">

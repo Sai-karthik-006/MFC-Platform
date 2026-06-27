@@ -11,6 +11,7 @@ import { Skeleton } from '../../../src/components/ui/skeleton';
 import { ProductCard } from '../../../src/components/product/product-card';
 import { productService } from '../../../src/services/product.service';
 import { useParams } from 'next/navigation';
+import { useCart } from '../../../src/hooks/use-cart';
 
 function ProductDetailSkeleton() {
   return (
@@ -71,11 +72,9 @@ function ProductGallery({ images }: { images: string[] }) {
   );
 }
 
-function QuantitySelector() {
-  const [quantity, setQuantity] = useState(1);
-
-  const increment = () => setQuantity((q) => Math.min(99, q + 1));
-  const decrement = () => setQuantity((q) => Math.max(1, q - 1));
+function QuantitySelector({ quantity, onQuantityChange }: { quantity: number; onQuantityChange: (q: number) => void }) {
+  const increment = () => onQuantityChange(Math.min(99, quantity + 1));
+  const decrement = () => onQuantityChange(Math.max(1, quantity - 1));
 
   return (
     <div className="inline-flex items-center gap-2">
@@ -135,6 +134,9 @@ function RelatedProductsSkeleton() {
 export default function ProductDetailPage() {
   const params = useParams();
   const productId = params.id as string;
+  const [quantity, setQuantity] = useState(1);
+  const [added, setAdded] = useState(false);
+  const { addItem } = useCart();
 
   const { data: product, isLoading, isError, refetch } = useQuery({
     queryKey: ['products', productId],
@@ -147,6 +149,20 @@ export default function ProductDetailPage() {
     queryFn: () => productService.getProductsByCategory(product!.category.id, productId),
     enabled: !!product?.category.id && !!productId,
   });
+
+  const handleAddToCart = () => {
+    if (product && productId) {
+      addItem({
+        productId,
+        name: product.name,
+        price,
+        quantity,
+        isVeg: product.isVeg,
+      });
+      setAdded(true);
+      setTimeout(() => setAdded(false), 1000);
+    }
+  };
 
   if (isLoading) {
     return <ProductDetailSkeleton />;
@@ -234,7 +250,7 @@ export default function ProductDetailPage() {
               <div className="space-y-2">
                 <span className="text-sm font-medium text-gray-500">Quantity</span>
                 <div>
-                  <QuantitySelector />
+                  <QuantitySelector quantity={quantity} onQuantityChange={setQuantity} />
                 </div>
               </div>
 
@@ -243,8 +259,9 @@ export default function ProductDetailPage() {
                 className="w-full transition-all duration-150 h-12 text-base font-semibold"
                 aria-label={`Add ${product.name} to cart`}
                 disabled={!product.isAvailable}
+                onClick={handleAddToCart}
               >
-                Add to Cart
+                {added ? 'Added ✓' : 'Add to Cart'}
               </Button>
             </div>
           </div>
@@ -286,15 +303,16 @@ export default function ProductDetailPage() {
           </div>
           <div className="hidden sm:block">
             <span className="text-xs text-gray-500 block mb-1">Quantity</span>
-            <QuantitySelector />
+            <QuantitySelector quantity={quantity} onQuantityChange={setQuantity} />
           </div>
           <Button
             size="lg"
             className="h-11 flex-1 sm:flex-none sm:w-40 text-sm font-semibold"
             disabled={!product.isAvailable}
             aria-label={`Add ${product.name} to cart`}
+            onClick={handleAddToCart}
           >
-            Add to Cart
+            {added ? 'Added ✓' : 'Add to Cart'}
           </Button>
         </div>
       </div>

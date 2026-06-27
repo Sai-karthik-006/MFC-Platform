@@ -2,11 +2,12 @@
 
 import type { ReactNode } from 'react';
 import { QueryProvider } from './query-provider';
+import { CartProvider } from '../context/cart-context';
 
-interface AppProviderProps {
-  children: ReactNode;
-}
-
-export function AppProvider({ children }: AppProviderProps) {
-  return <QueryProvider>{children}</QueryProvider>;
+export function AppProvider({ children }: { children: ReactNode }) {
+  return (
+    <QueryProvider>
+      <CartProvider>{children}</CartProvider>
+    </QueryProvider>
+  );
 }
