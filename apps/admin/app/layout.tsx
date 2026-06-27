@@ -3,17 +3,17 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: "MFC Admin",
-  description: "MFC Platform Admin Application"
+  description: "MFC Platform Admin Application",
 };
 
 export default function RootLayout({
-  children
+  children,
 }: {
   children: React.ReactNode;
 }) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body className="bg-gray-50">{children}</body>
     </html>
   );
 }
