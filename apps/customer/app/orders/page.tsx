@@ -5,6 +5,7 @@ import { PageWrapper } from '../../src/components/layout/page-wrapper';
 import { Card, CardContent } from '../../src/components/ui/card';
 import { EmptyState } from '../../src/components/ui/empty-state';
 import { orderService, type Order } from '../../src/services/order.service';
+import { ProtectedRoute } from '../../src/components/ProtectedRoute';
 
 function StatusBadge({ status }: { status: Order['status'] }) {
   const statusStyles: Record<Order['status'], string> = {
@@ -67,6 +68,14 @@ function OrderCard({ order }: { order: Order }) {
 }
 
 export default function OrdersPage() {
+  return (
+    <ProtectedRoute>
+      <OrdersList />
+    </ProtectedRoute>
+  );
+}
+
+function OrdersList() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);

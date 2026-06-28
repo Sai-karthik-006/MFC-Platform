@@ -5,6 +5,7 @@ import { PageWrapper } from '../../../src/components/layout/page-wrapper';
 import { Card, CardContent, CardHeader, CardFooter } from '../../../src/components/ui/card';
 import { EmptyState } from '../../../src/components/ui/empty-state';
 import { orderService, type OrderDetail } from '../../../src/services/order.service';
+import { ProtectedRoute } from '../../../src/components/ProtectedRoute';
 
 interface TimelineStatus {
   status: OrderDetail['status'];
@@ -96,6 +97,14 @@ function OrderItem({ item }: { item: { name: string; price: number; quantity: nu
 }
 
 export default function OrderDetailPage({ params }: { params: Promise<{ id: string }> }) {
+  return (
+    <ProtectedRoute>
+      <OrderDetail params={params} />
+    </ProtectedRoute>
+  );
+}
+
+function OrderDetail({ params }: { params: Promise<{ id: string }> }) {
   const resolvedParams = React.use(params);
   const { id } = resolvedParams;
   const [order, setOrder] = useState<OrderDetail | null>(null);

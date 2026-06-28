@@ -9,6 +9,7 @@ import { Button } from '../../src/components/ui/button';
 import { Input } from '../../src/components/ui/input';
 import { Textarea } from '../../src/components/ui/textarea';
 import { PageWrapper } from '../../src/components/layout/page-wrapper';
+import { ProtectedRoute } from '../../src/components/ProtectedRoute';
 
 type DeliveryOption = 'home' | 'work' | 'other';
 type PaymentMethod = 'upi' | 'card' | 'cod';
@@ -102,6 +103,14 @@ function OrderSummary({
 }
 
 export default function CheckoutPage() {
+  return (
+    <ProtectedRoute>
+      <CheckoutForm />
+    </ProtectedRoute>
+  );
+}
+
+function CheckoutForm() {
   const { items, subtotal, totalItems, clearCart } = useCart();
 
   const [form, setForm] = useState({

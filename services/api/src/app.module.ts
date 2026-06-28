@@ -12,6 +12,8 @@ import { CateringModule } from './modules/catering/catering.module';
 import { HealthModule } from './modules/health/health.module';
 import { AnalyticsModule } from './modules/analytics/analytics.module';
 
+import { AuthModule } from './modules/auth/auth.module';
+
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -28,6 +30,7 @@ import { AnalyticsModule } from './modules/analytics/analytics.module';
     CateringModule,
     HealthModule,
     AnalyticsModule,
+    AuthModule,
   ],
 })
 export class AppModule {}
