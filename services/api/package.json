@@ -28,7 +28,8 @@
     "class-validator": "^0.14.1",
     "reflect-metadata": "^0.2.0",
     "rxjs": "^7.8.0",
-    "zod": "^3.22.0"
+    "zod": "^3.22.0",
+    "pdfkit": "^0.15.0"
   },
   "devDependencies": {
     "@eslint/core": "^1.0.0",
@@ -41,6 +42,7 @@
     "@types/react": "^19.0.0",
     "prisma": "^6.0.0",
     "tsx": "^4.0.0",
-    "typescript": "^5.0.0"
+    "typescript": "^5.0.0",
+    "@types/pdfkit": "^0.13.0"
   }
 }

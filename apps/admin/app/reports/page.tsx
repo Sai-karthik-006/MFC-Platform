@@ -10,14 +10,16 @@ interface ReportCardProps {
   description: string;
   icon: React.ReactNode;
   onGenerate: () => Promise<ReportResponse>;
-  onExport: () => Promise<void>;
+  onExportCsv: () => Promise<void>;
+  onExportPdf: () => Promise<void>;
 }
 
-function ReportCard({ title, description, icon, onGenerate, onExport }: ReportCardProps) {
+function ReportCard({ title, description, icon, onGenerate, onExportCsv, onExportPdf }: ReportCardProps) {
   const [loading, setLoading] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
   const [report, setReport] = React.useState<ReportResponse | null>(null);
-  const [exporting, setExporting] = React.useState(false);
+  const [exportingCsv, setExportingCsv] = React.useState(false);
+  const [exportingPdf, setExportingPdf] = React.useState(false);
   const [exportError, setExportError] = React.useState<string | null>(null);
 
   const handleGenerate = async () => {
@@ -35,15 +37,27 @@ function ReportCard({ title, description, icon, onGenerate, onExport }: ReportCa
     }
   };
 
-  const handleExport = async () => {
-    setExporting(true);
+  const handleExportCsv = async () => {
+    setExportingCsv(true);
     setExportError(null);
     try {
-      await onExport();
+      await onExportCsv();
     } catch (err) {
-      setExportError(err instanceof Error ? err.message : `Failed to export ${title.toLowerCase()}`);
+      setExportError(err instanceof Error ? err.message : `Failed to export ${title.toLowerCase()} CSV`);
     } finally {
-      setExporting(false);
+      setExportingCsv(false);
+    }
+  };
+
+  const handleExportPdf = async () => {
+    setExportingPdf(true);
+    setExportError(null);
+    try {
+      await onExportPdf();
+    } catch (err) {
+      setExportError(err instanceof Error ? err.message : `Failed to export ${title.toLowerCase()} PDF`);
+    } finally {
+      setExportingPdf(false);
     }
   };
 
@@ -99,10 +113,18 @@ function ReportCard({ title, description, icon, onGenerate, onExport }: ReportCa
               <Button
                 variant="outline"
                 size="sm"
-                onClick={handleExport}
-                disabled={exporting}
+                onClick={handleExportCsv}
+                disabled={exportingCsv}
               >
-                {exporting ? 'Exporting...' : 'Export CSV'}
+                {exportingCsv ? 'Exporting...' : 'Export CSV'}
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleExportPdf}
+                disabled={exportingPdf}
+              >
+                {exportingPdf ? 'Exporting...' : 'Export PDF'}
               </Button>
               <Button variant="ghost" size="sm" onClick={() => { setReport(null); setExportError(null); }}>
                 Clear
@@ -113,7 +135,7 @@ function ReportCard({ title, description, icon, onGenerate, onExport }: ReportCa
           {exportError && (
             <div className="rounded-md border border-red-200 bg-red-50 p-3 text-sm">
               <p className="text-red-600">{exportError}</p>
-              <Button variant="outline" size="sm" className="mt-2" onClick={handleExport}>
+              <Button variant="outline" size="sm" className="mt-2" onClick={handleExportCsv}>
                 Retry
               </Button>
             </div>
@@ -180,7 +202,8 @@ export default function ReportsPage() {
         </svg>
       ),
       generate: () => reportsService.getSalesReport({ dateRange: "month" }),
-      export: () => reportsService.downloadSalesCsv({ dateRange: "month" }),
+      exportCsv: () => reportsService.downloadSalesCsv({ dateRange: "month" }),
+      exportPdf: () => reportsService.downloadSalesPdf({ dateRange: "month" }),
     },
     {
       title: "Orders Report",
@@ -191,7 +214,8 @@ export default function ReportsPage() {
         </svg>
       ),
       generate: () => reportsService.getOrdersReport({ dateRange: "month" }),
-      export: () => reportsService.downloadOrdersCsv({ dateRange: "month" }),
+      exportCsv: () => reportsService.downloadOrdersCsv({ dateRange: "month" }),
+      exportPdf: () => reportsService.downloadOrdersPdf({ dateRange: "month" }),
     },
     {
       title: "Customer Report",
@@ -202,7 +226,8 @@ export default function ReportsPage() {
         </svg>
       ),
       generate: () => reportsService.getCustomersReport({ dateRange: "month" }),
-      export: () => reportsService.downloadCustomersCsv({ dateRange: "month" }),
+      exportCsv: () => reportsService.downloadCustomersCsv({ dateRange: "month" }),
+      exportPdf: () => reportsService.downloadCustomersPdf({ dateRange: "month" }),
     },
     {
       title: "Product Report",
@@ -213,7 +238,8 @@ export default function ReportsPage() {
         </svg>
       ),
       generate: () => reportsService.getProductsReport({ dateRange: "month" }),
-      export: () => reportsService.downloadProductsCsv({ dateRange: "month" }),
+      exportCsv: () => reportsService.downloadProductsCsv({ dateRange: "month" }),
+      exportPdf: () => reportsService.downloadProductsPdf({ dateRange: "month" }),
     },
     {
       title: "Catering Report",
@@ -224,7 +250,8 @@ export default function ReportsPage() {
         </svg>
       ),
       generate: () => reportsService.getCateringReport({ dateRange: "month" }),
-      export: () => reportsService.downloadCateringCsv({ dateRange: "month" }),
+      exportCsv: () => reportsService.downloadCateringCsv({ dateRange: "month" }),
+      exportPdf: () => reportsService.downloadCateringPdf({ dateRange: "month" }),
     },
   ];
 
@@ -251,7 +278,8 @@ export default function ReportsPage() {
               description={card.description}
               icon={card.icon}
               onGenerate={card.generate}
-              onExport={card.export}
+              onExportCsv={card.exportCsv}
+              onExportPdf={card.exportPdf}
             />
           ))}
         </div>

@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../database/prisma.service';
 import { DateRangeFilter } from '../analytics/analytics.response';
+import PDFDocument from 'pdfkit';
 
 export interface BaseReportResponse {
   totalRecords: number;
@@ -594,5 +595,154 @@ export class ReportsService {
     }));
 
     return this.toCsv(records);
+  }
+
+  private generatePdfBuffer(reportTitle: string, summary: Record<string, unknown>, preview: Record<string, unknown>[], totalRecords: number): Buffer {
+    const doc = new PDFDocument({ size: 'A4', margin: 50 });
+    const chunks: Buffer[] = [];
+    doc.on('data', (chunk) => chunks.push(chunk));
+
+    const pageWidth = doc.page.width - doc.page.margins.left - doc.page.margins.right;
+
+    doc.font('Helvetica');
+
+    doc.fontSize(18).font('Helvetica-Bold').text('MFC Platform', { align: 'center' });
+    doc.moveDown(0.3);
+    doc.fontSize(14).text(reportTitle, { align: 'center' });
+    doc.moveDown(0.3);
+
+    const generatedDate = new Date().toLocaleString();
+    doc.fontSize(9).font('Helvetica').text(`Generated: ${generatedDate}`, { align: 'center' });
+
+    doc.moveDown(0.5);
+    doc
+      .moveTo(doc.page.margins.left, doc.y)
+      .lineTo(doc.page.width - doc.page.margins.right, doc.y)
+      .strokeColor('#cccccc')
+      .lineWidth(0.5)
+      .stroke();
+    doc.moveDown(0.5);
+
+    doc.fontSize(11).font('Helvetica-Bold').text('Summary Metrics', { align: 'left' });
+    doc.moveDown(0.3);
+    doc.fontSize(9).font('Helvetica');
+
+    const summaryEntries = Object.entries(summary);
+    const colCount = 3;
+    const rowHeight = 20;
+    let tableY = doc.y;
+    const usableWidth = pageWidth / colCount;
+
+    summaryEntries.forEach(([key, value], index) => {
+      const xPos = doc.page.margins.left + (index % colCount) * usableWidth;
+      const yPos = tableY + Math.floor(index / colCount) * rowHeight;
+
+      if (yPos + rowHeight > doc.page.height - doc.page.margins.bottom - 60) {
+        doc.addPage();
+        tableY = doc.page.margins.top;
+      }
+
+      doc.rect(xPos, yPos, usableWidth, rowHeight).fill('#f5f5f5');
+      doc.fillColor('#333333').font('Helvetica-Bold').fontSize(8);
+      doc.text(this.formatKey(key), xPos + 4, yPos + 2, { width: usableWidth - 8 });
+      doc.font('Helvetica').fontSize(10);
+      const valueStr = typeof value === 'object' ? JSON.stringify(value) : String(value);
+      doc.text(valueStr, xPos + 4, yPos + 13, { width: usableWidth - 8 });
+    });
+
+    const summaryTableHeight = Math.ceil(summaryEntries.length / colCount) * rowHeight;
+    doc.y = tableY + summaryTableHeight + 10;
+
+    doc.moveDown(0.3);
+    doc.fontSize(11).font('Helvetica-Bold').text('Data Table', { align: 'left' });
+    doc.moveDown(0.3);
+
+    if (preview.length > 0) {
+      const columns = Object.keys(preview[0]);
+      const colWidth = pageWidth / columns.length;
+      let currentY = doc.y;
+
+      doc.fontSize(8).font('Helvetica-Bold');
+      columns.forEach((col, idx) => {
+        doc.rect(doc.page.margins.left + idx * colWidth, currentY, colWidth, 18).fill('#e0e0e0');
+        doc.fillColor('#000000').text(this.formatKey(col), doc.page.margins.left + idx * colWidth + 4, currentY + 3, { width: colWidth - 8 });
+      });
+      currentY += 18;
+
+      doc.fontSize(8).font('Helvetica');
+      preview.forEach((row, rowIndex) => {
+        if (currentY + 16 > doc.page.height - doc.page.margins.bottom - 60) {
+          doc.addPage();
+          currentY = doc.page.margins.top;
+          doc.fontSize(8).font('Helvetica-Bold');
+          columns.forEach((col, idx) => {
+            doc.rect(doc.page.margins.left + idx * colWidth, currentY, colWidth, 18).fill('#e0e0e0');
+            doc.fillColor('#000000').text(this.formatKey(col), doc.page.margins.left + idx * colWidth + 4, currentY + 3, { width: colWidth - 8 });
+          });
+          currentY += 18;
+          doc.fontSize(8).font('Helvetica');
+        }
+
+        if (rowIndex % 2 === 0) {
+          columns.forEach((_, idx) => {
+            doc.rect(doc.page.margins.left + idx * colWidth, currentY, colWidth, 16).fill('#fafafa');
+          });
+        }
+
+        columns.forEach((col, colIndex) => {
+          const value = row[col];
+          const valueStr = typeof value === 'object' ? JSON.stringify(value) : String(value ?? '');
+          doc.fillColor('#333333').text(valueStr, doc.page.margins.left + colIndex * colWidth + 4, currentY + 3, { width: colWidth - 8 });
+        });
+        currentY += 16;
+      });
+    } else {
+      doc.fontSize(9).font('Helvetica').fillColor('#888888').text('No data available for this report.', { align: 'center' });
+    }
+
+    doc.y = Math.max(doc.y, doc.page.height - doc.page.margins.bottom - 40);
+    doc
+      .moveTo(doc.page.margins.left, doc.y)
+      .lineTo(doc.page.width - doc.page.margins.right, doc.y)
+      .strokeColor('#cccccc')
+      .lineWidth(0.5)
+      .stroke();
+    doc.moveDown(0.3);
+    doc.fontSize(8).font('Helvetica').fillColor('#888888').text(`Page ${doc.bufferedPageRange().start + 1}`, { align: 'center' });
+
+    doc.end();
+    return Buffer.concat(chunks);
+  }
+
+  private formatKey(key: string): string {
+    return key
+      .replace(/([A-Z])/g, ' $1')
+      .replace(/^./, (str) => str.toUpperCase())
+      .trim();
+  }
+
+  async buildSalesPdf(filter: DateRangeFilter): Promise<Buffer> {
+    const report = await this.getSalesReport(filter);
+    return this.generatePdfBuffer('Sales Report', report.summary, report.preview as Record<string, unknown>[], report.totalRecords);
+  }
+
+  async buildOrdersPdf(filter: DateRangeFilter): Promise<Buffer> {
+    const report = await this.getOrdersReport(filter);
+    return this.generatePdfBuffer('Orders Report', report.summary, report.preview as Record<string, unknown>[], report.totalRecords);
+  }
+
+  async buildCustomersPdf(filter: DateRangeFilter): Promise<Buffer> {
+    const report = await this.getCustomersReport(filter);
+    return this.generatePdfBuffer('Customers Report', report.summary, report.preview as Record<string, unknown>[], report.totalRecords);
+  }
+
+  async buildProductsPdf(filter: DateRangeFilter): Promise<Buffer> {
+    const report = await this.getProductsReport(filter);
+    return this.generatePdfBuffer('Products Report', report.summary, report.preview as Record<string, unknown>[], report.totalRecords);
+  }
+
+  async buildCateringPdf(filter: DateRangeFilter): Promise<Buffer> {
+    const report = await this.getCateringReport(filter);
+    return this.generatePdfBuffer('Catering Report', report.summary, report.preview as Record<string, unknown>[], report.totalRecords);
   }
 }

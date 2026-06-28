@@ -31,6 +31,46 @@ export class ReportsController {
     return this.reportsService.getCateringReport(filter);
   }
 
+  @Get('sales/pdf')
+  async getSalesPdf(@Res() res, @Query() filter: DateRangeFilter) {
+    const pdf = await this.reportsService.buildSalesPdf(filter);
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', `attachment; filename="sales-report-${new Date().toISOString().split('T')[0]}.pdf"`);
+    res.send(pdf);
+  }
+
+  @Get('orders/pdf')
+  async getOrdersPdf(@Res() res, @Query() filter: DateRangeFilter) {
+    const pdf = await this.reportsService.buildOrdersPdf(filter);
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', `attachment; filename="orders-report-${new Date().toISOString().split('T')[0]}.pdf"`);
+    res.send(pdf);
+  }
+
+  @Get('customers/pdf')
+  async getCustomersPdf(@Res() res, @Query() filter: DateRangeFilter) {
+    const pdf = await this.reportsService.buildCustomersPdf(filter);
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', `attachment; filename="customers-report-${new Date().toISOString().split('T')[0]}.pdf"`);
+    res.send(pdf);
+  }
+
+  @Get('products/pdf')
+  async getProductsPdf(@Res() res, @Query() filter: DateRangeFilter) {
+    const pdf = await this.reportsService.buildProductsPdf(filter);
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', `attachment; filename="products-report-${new Date().toISOString().split('T')[0]}.pdf"`);
+    res.send(pdf);
+  }
+
+  @Get('catering/pdf')
+  async getCateringPdf(@Res() res, @Query() filter: DateRangeFilter) {
+    const pdf = await this.reportsService.buildCateringPdf(filter);
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', `attachment; filename="catering-report-${new Date().toISOString().split('T')[0]}.pdf"`);
+    res.send(pdf);
+  }
+
   @Get('sales/csv')
   async getSalesCsv(@Res() res, @Query() filter: DateRangeFilter) {
     const csv = await this.reportsService.getSalesCsv(filter);

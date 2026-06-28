@@ -90,6 +90,26 @@ export class ReportsService {
     await this.downloadCsv('/reports/catering/csv', filter, `catering-report-${new Date().toISOString().split('T')[0]}.csv`);
   }
 
+  async downloadSalesPdf(filter: DateRangeFilter): Promise<void> {
+    await this.downloadPdf('/reports/sales/pdf', filter, `sales-report-${new Date().toISOString().split('T')[0]}.pdf`);
+  }
+
+  async downloadOrdersPdf(filter: DateRangeFilter): Promise<void> {
+    await this.downloadPdf('/reports/orders/pdf', filter, `orders-report-${new Date().toISOString().split('T')[0]}.pdf`);
+  }
+
+  async downloadCustomersPdf(filter: DateRangeFilter): Promise<void> {
+    await this.downloadPdf('/reports/customers/pdf', filter, `customers-report-${new Date().toISOString().split('T')[0]}.pdf`);
+  }
+
+  async downloadProductsPdf(filter: DateRangeFilter): Promise<void> {
+    await this.downloadPdf('/reports/products/pdf', filter, `products-report-${new Date().toISOString().split('T')[0]}.pdf`);
+  }
+
+  async downloadCateringPdf(filter: DateRangeFilter): Promise<void> {
+    await this.downloadPdf('/reports/catering/pdf', filter, `catering-report-${new Date().toISOString().split('T')[0]}.pdf`);
+  }
+
   private async downloadCsv(endpoint: string, params: DateRangeFilter, filename: string): Promise<void> {
     const token = typeof window !== 'undefined' ? localStorage.getItem('admin_access_token') : null;
     const url = `${env.API_URL}${endpoint}?${buildQuery(params)}`;
@@ -101,6 +121,30 @@ export class ReportsService {
     if (!response.ok) {
       const text = await response.text();
       throw new Error(`Failed to download CSV: ${response.status} ${text}`);
+    }
+
+    const blob = await response.blob();
+    const blobUrl = window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = blobUrl;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    window.URL.revokeObjectURL(blobUrl);
+  }
+
+  private async downloadPdf(endpoint: string, params: DateRangeFilter, filename: string): Promise<void> {
+    const token = typeof window !== 'undefined' ? localStorage.getItem('admin_access_token') : null;
+    const url = `${env.API_URL}${endpoint}?${buildQuery(params)}`;
+
+    const response = await fetch(url, {
+      headers: token ? { Authorization: `Bearer ${token}` } : {},
+    });
+
+    if (!response.ok) {
+      const text = await response.text();
+      throw new Error(`Failed to download PDF: ${response.status} ${text}`);
     }
 
     const blob = await response.blob();
