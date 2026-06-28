@@ -11,6 +11,7 @@ import { OrderModule } from './modules/order/order.module';
 import { CateringModule } from './modules/catering/catering.module';
 import { HealthModule } from './modules/health/health.module';
 import { AnalyticsModule } from './modules/analytics/analytics.module';
+import { DeliveryModule } from './modules/delivery/delivery.module';
 
 import { AuthModule } from './modules/auth/auth.module';
 
@@ -30,6 +31,7 @@ import { AuthModule } from './modules/auth/auth.module';
     CateringModule,
     HealthModule,
     AnalyticsModule,
+    DeliveryModule,
     AuthModule,
   ],
 })
