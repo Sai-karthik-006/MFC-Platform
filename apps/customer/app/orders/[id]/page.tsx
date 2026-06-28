@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { PageWrapper } from '../../../src/components/layout/page-wrapper';
 import { Card, CardContent, CardHeader, CardFooter } from '../../../src/components/ui/card';
 import { EmptyState } from '../../../src/components/ui/empty-state';
@@ -15,22 +15,32 @@ interface TimelineStatus {
 
 function StatusTimeline({ status }: { status: OrderDetail['status'] }) {
   const statuses: TimelineStatus[] = [
-    { status: 'pending', label: 'Order Placed', date: 'Today, 10:30 AM' },
-    { status: 'confirmed', label: 'Confirmed', date: 'Today, 11:15 AM' },
-    { status: 'shipped', label: 'Shipped', date: 'Processing' },
-    { status: 'delivered', label: 'Delivered', date: 'Pending' },
+    { status: 'pending', label: 'Order Placed' },
+    { status: 'confirmed', label: 'Confirmed' },
+    { status: 'shipped', label: 'Preparing' },
+    { status: 'delivered', label: 'Picked Up' },
+    { status: 'delivered', label: 'Out For Delivery' },
+    { status: 'delivered', label: 'Delivered' },
   ];
 
-  const activeIndex = statuses.findIndex((s) => s.status === status);
+  const statusOrder: Record<string, number> = {
+    pending: 0,
+    confirmed: 1,
+    shipped: 2,
+    delivered: 5,
+    cancelled: -1,
+  };
+
+  const activeIndex = statusOrder[status];
 
   return (
     <div className="space-y-4">
       {statuses.map((s, index) => {
-        const isActive = index <= activeIndex;
-        const isCurrent = index === activeIndex;
+        const isActive = index <= activeIndex && activeIndex >= 0;
+        const isCurrent = index === activeIndex && activeIndex >= 0;
 
         return (
-          <div key={s.status} className="flex items-start gap-4">
+          <div key={index} className="flex items-start gap-4">
             <div className="flex flex-col items-center">
               <div
                 className={[
@@ -111,15 +121,23 @@ function OrderDetail({ params }: { params: Promise<{ id: string }> }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    if (id) {
-      orderService
-        .getOrder(id)
-        .then(setOrder)
-        .catch((err) => setError(err.message))
-        .finally(() => setLoading(false));
+  const fetchOrder = useCallback(async () => {
+    try {
+      const data = await orderService.getOrder(id);
+      setOrder(data);
+      setError(null);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to fetch order');
+    } finally {
+      setLoading(false);
     }
   }, [id]);
+
+  useEffect(() => {
+    fetchOrder();
+    const interval = setInterval(fetchOrder, 5000);
+    return () => clearInterval(interval);
+  }, [fetchOrder]);
 
   if (loading) {
     return (

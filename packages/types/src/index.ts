@@ -62,3 +62,16 @@ export interface Product {
   createdAt: Date;
   updatedAt: Date;
 }
+
+export type NotificationType = 'ORDER_CONFIRMED' | 'ORDER_PREPARING' | 'ORDER_PICKED_UP' | 'ORDER_DELIVERED' | 'NEW_CATERING_REQUEST' | 'NEW_ORDER_ASSIGNED';
+
+export interface Notification {
+  id: string;
+  type: NotificationType;
+  title: string;
+  message: string;
+  orderId?: string | null;
+  cateringId?: string | null;
+  isRead: boolean;
+  createdAt: string;
+}

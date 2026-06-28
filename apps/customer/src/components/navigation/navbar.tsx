@@ -2,6 +2,7 @@ import * as React from "react";
 import { Container } from "../layout/container";
 import { Button } from "../ui/button";
 import { Badge } from "../ui/badge";
+import { NotificationBell } from "../ui/notification-bell";
 const SearchIcon = () => (
   <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
 );
@@ -91,6 +92,7 @@ export function Navbar({
 
           <div className="flex items-center gap-2">
             <div className="hidden items-center gap-2 md:flex">
+              <NotificationBell />
               <Button
                 variant="ghost"
                 size="sm"

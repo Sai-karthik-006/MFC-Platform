@@ -1,7 +1,7 @@
 import * as React from "react";
 
 interface BadgeProps extends React.HTMLAttributes<HTMLSpanElement> {
-  variant?: "default" | "success" | "warning" | "danger" | "info";
+  variant?: "default" | "success" | "warning" | "danger" | "info" | "destructive";
 }
 
 const variantStyles: Record<string, string> = {

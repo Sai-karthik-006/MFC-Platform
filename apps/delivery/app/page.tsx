@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { DeliveryNotificationBell } from "./components/notification-bell";
 
 interface Order {
   id: string;
@@ -254,9 +255,12 @@ export default function DeliveryDashboard() {
   return (
     <div className="min-h-screen bg-gray-50 p-4 md:p-6 lg:p-8">
       <div className="mx-auto max-w-7xl space-y-6">
-        <header className="space-y-1">
-          <h1 className="text-2xl font-bold text-gray-900 md:text-3xl">Delivery Dashboard</h1>
-          <p className="text-gray-600">Manage your assigned deliveries.</p>
+        <header className="flex justify-between items-center space-y-1">
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900 md:text-3xl">Delivery Dashboard</h1>
+            <p className="text-gray-600">Manage your assigned deliveries.</p>
+          </div>
+          <DeliveryNotificationBell />
         </header>
 
         <div className="grid grid-cols-2 gap-4 md:grid-cols-4">

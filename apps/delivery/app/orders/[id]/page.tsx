@@ -1,29 +1,10 @@
 "use client";
 
 import * as React from "react";
-
-interface OrderItem {
-  id: string;
-  name: string;
-  quantity: number;
-  price: string;
-}
-
-interface Order {
-  id: string;
-  customer: string;
-  phone: string;
-  address: string;
-  items: OrderItem[];
-  total: string;
-  paymentMethod: string;
-  notes: string;
-  status: string;
-}
+import { deliveryService, type Order, type OrderStatus } from '@/services/delivery.service';
 
 interface TimelineStep {
   status: string;
-  time: string;
   active: boolean;
 }
 
@@ -32,12 +13,14 @@ function Button({
   size = "md",
   className = "",
   children,
+  disabled,
   ...props
 }: {
   variant?: "primary" | "secondary" | "outline" | "ghost" | "destructive";
   size?: "sm" | "md" | "lg";
   className?: string;
   children: React.ReactNode;
+  disabled?: boolean;
 } & React.ButtonHTMLAttributes<HTMLButtonElement>) {
   const variantStyles: Record<string, string> = {
     primary: "bg-blue-600 text-white hover:bg-blue-700 focus:ring-blue-500",
@@ -64,6 +47,7 @@ function Button({
         sizeStyles[size],
         className,
       ].join(" ")}
+      disabled={disabled}
       {...props}
     >
       {children}
@@ -165,32 +149,25 @@ function ErrorState({ message, onRetry }: { message: string; onRetry: () => void
   );
 }
 
-function getTimeline(status: string): TimelineStep[] {
+function getTimeline(status: OrderStatus): TimelineStep[] {
   const steps: TimelineStep[] = [
-    { status: "Assigned", time: "", active: false },
-    { status: "Accepted", time: "", active: false },
-    { status: "Picked Up", time: "", active: false },
-    { status: "Delivered", time: "", active: false },
+    { status: "Assigned", active: false },
+    { status: "Accepted", active: false },
+    { status: "Picked Up", active: false },
+    { status: "Delivered", active: false },
   ];
-
-  const now = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
   switch (status) {
     case "READY":
       steps[0].active = true;
-      steps[0].time = now;
       break;
     case "IN_TRANSIT":
       steps[0].active = true;
       steps[1].active = true;
-      steps[0].time = now;
-      steps[1].time = now;
+      steps[2].active = true;
       break;
     case "COMPLETED":
-      steps.forEach(step => {
-        step.active = true;
-        step.time = now;
-      });
+      steps.forEach(step => step.active = true);
       break;
   }
 
@@ -208,14 +185,10 @@ export default function OrderDetailsPage({ params }: { params: Promise<{ id: str
     setLoading(true);
     setError(null);
     try {
-      const response = await fetch(`/api/delivery/orders/${orderId}`);
-      if (!response.ok) {
-        throw new Error("Failed to fetch order");
-      }
-      const data = await response.json();
+      const data = await deliveryService.getOrder(orderId);
       setOrder(data);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "An error occurred");
+      setError(err instanceof Error ? err.message : "Failed to fetch order");
     } finally {
       setLoading(false);
     }
@@ -223,13 +196,22 @@ export default function OrderDetailsPage({ params }: { params: Promise<{ id: str
 
   React.useEffect(() => {
     fetchOrder();
+    const interval = setInterval(fetchOrder, 5000);
+    return () => clearInterval(interval);
   }, [fetchOrder]);
 
-  const handleAction = async (endpoint: string) => {
+  const handleAction = async (action: 'accept' | 'picked-up' | 'delivered') => {
     try {
-      const response = await fetch(`/api/delivery/orders/${orderId}/${endpoint}`, { method: "PATCH" });
-      if (!response.ok) {
-        throw new Error("Action failed");
+      switch (action) {
+        case 'accept':
+          await deliveryService.acceptOrder(orderId);
+          break;
+        case 'picked-up':
+          await deliveryService.markPickedUp(orderId);
+          break;
+        case 'delivered':
+          await deliveryService.markDelivered(orderId);
+          break;
       }
       fetchOrder();
     } catch (err) {
@@ -249,7 +231,7 @@ export default function OrderDetailsPage({ params }: { params: Promise<{ id: str
     return <ErrorState message="Order not found" onRetry={fetchOrder} />;
   }
 
-  const timeline = getTimeline(order.status);
+  const timeline = getTimeline(order.status as OrderStatus);
 
   return (
     <div className="min-h-screen bg-gray-50 p-4 md:p-6 lg:p-8">
@@ -260,10 +242,31 @@ export default function OrderDetailsPage({ params }: { params: Promise<{ id: str
             <p className="text-gray-600">Delivery Details</p>
           </div>
           <div className="flex flex-wrap gap-2">
-            <Button variant="ghost" size="sm" onClick={() => handleAction("accept")}>Accept Order</Button>
-            <Button variant="destructive" size="sm" onClick={() => handleAction("reject")}>Reject Order</Button>
-            <Button variant="secondary" size="sm" onClick={() => handleAction("picked-up")}>Picked Up</Button>
-            <Button variant="secondary" size="sm" onClick={() => handleAction("delivered")}>Delivered</Button>
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              onClick={() => handleAction('accept')}
+              disabled={order.status !== 'READY'}
+            >
+              Accept
+            </Button>
+            <Button variant="destructive" size="sm">Reject</Button>
+            <Button 
+              variant="secondary" 
+              size="sm" 
+              onClick={() => handleAction('picked-up')}
+              disabled={order.status !== 'IN_TRANSIT'}
+            >
+              Picked Up
+            </Button>
+            <Button 
+              variant="secondary" 
+              size="sm" 
+              onClick={() => handleAction('delivered')}
+              disabled={order.status !== 'IN_TRANSIT'}
+            >
+              Delivered
+            </Button>
           </div>
         </header>
 
@@ -368,7 +371,6 @@ export default function OrderDetailsPage({ params }: { params: Promise<{ id: str
                         <p className={["font-medium", step.active ? "text-gray-900" : "text-gray-500"].join(" ")}>
                           {step.status}
                         </p>
-                        {step.time && <p className="text-sm text-gray-500">{step.time}</p>}
                       </div>
                     </div>
                   ))}

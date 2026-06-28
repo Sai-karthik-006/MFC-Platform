@@ -7,3 +7,4 @@ export { Spinner } from "./spinner";
 export { Skeleton } from "./skeleton";
 export { EmptyState } from "./empty-state";
 export { Modal } from "./modal";
+export { NotificationBell } from "./notification-bell";

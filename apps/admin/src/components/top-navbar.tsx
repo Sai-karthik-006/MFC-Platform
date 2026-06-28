@@ -1,6 +1,6 @@
 "use client";
 
-import { Badge } from "./ui/badge";
+import { AdminNotificationBell } from "./ui/notification-bell";
 
 export function TopNavbar({
   isSidebarCollapsed = false,
@@ -47,19 +47,8 @@ export function TopNavbar({
       </div>
 
       <div className="flex items-center gap-2">
-        <div className="relative">
-          <button
-            className="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-transparent text-gray-600 hover:bg-gray-100 transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            aria-label="Notifications"
-          >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-5 5v-5zM10.5 17h5l-5 5v-5zM6 17h5l-5 5v-5z" />
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18 8A6 6 0 106 8c0 7-2 9-2 9h16S18 15 18 8" />
-            </svg>
-          </button>
-          <Badge variant="destructive" className="absolute -top-1 -right-1 min-w-[1.25rem] h-5">
-            3
-          </Badge>
+<div className="relative">
+          <AdminNotificationBell />
         </div>
 
         <div className="flex items-center gap-3 pl-3 border-l border-gray-200">

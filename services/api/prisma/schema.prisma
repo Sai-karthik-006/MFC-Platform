@@ -112,6 +112,7 @@ model Order {
   paymentStatus   PaymentStatus
   items           OrderItem[]
   payment         Payment?
+  notifications   Notification[] @relation("NotificationOrder")
   createdAt       DateTime       @default(now()) @db.Timestamp
   updatedAt       DateTime       @updatedAt @db.Timestamp
 
@@ -158,14 +159,17 @@ enum UserRole {
 }
 
 model User {
-  id        String    @id @default(uuid()) @db.Uuid
-  email     String    @unique @db.VarChar(255)
-  password  String    @db.VarChar(255)
-  name      String    @db.VarChar(100)
-  phone     String?   @db.VarChar(20)
-  role      UserRole  @default(CUSTOMER)
-  createdAt DateTime  @default(now()) @db.Timestamp
-  updatedAt DateTime  @updatedAt @db.Timestamp
+  id           String        @id @default(uuid()) @db.Uuid
+  email        String        @unique @db.VarChar(255)
+  password     String        @db.VarChar(255)
+  name         String        @db.VarChar(100)
+  phone        String?       @db.VarChar(20)
+  role         UserRole      @default(CUSTOMER)
+  notifications Notification[] @relation("UserNotifications")
+  createdAt    DateTime      @default(now()) @db.Timestamp
+  updatedAt    DateTime      @updatedAt @db.Timestamp
+
+  @@index([role])
 }
 
 model CateringRequest {
@@ -178,6 +182,35 @@ model CateringRequest {
   guestCount      Int
   message         String?
   status          String
+  notifications   Notification[] @relation("NotificationCatering")
   createdAt       DateTime @default(now()) @db.Timestamp
   updatedAt       DateTime @updatedAt @db.Timestamp
+}
+
+enum NotificationType {
+  ORDER_CONFIRMED
+  ORDER_PREPARING
+  ORDER_PICKED_UP
+  ORDER_DELIVERED
+  NEW_CATERING_REQUEST
+  NEW_ORDER_ASSIGNED
+}
+
+model Notification {
+  id          String         @id @default(uuid()) @db.Uuid
+  userId      String         @db.Uuid
+  user        User           @relation("UserNotifications", fields: [userId], references: [id], onDelete: Cascade)
+  type        NotificationType
+  title       String
+  message     String
+  orderId     String?        @db.Uuid
+  order       Order?         @relation("NotificationOrder", fields: [orderId], references: [id])
+  cateringId  String?        @db.Uuid
+  catering    CateringRequest? @relation("NotificationCatering", fields: [cateringId], references: [id])
+  isRead      Boolean        @default(false)
+  createdAt   DateTime       @default(now()) @db.Timestamp
+
+  @@index([userId])
+  @@index([isRead])
+  @@index([createdAt])
 }
