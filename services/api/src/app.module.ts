@@ -14,6 +14,7 @@ import { AnalyticsModule } from './modules/analytics/analytics.module';
 import { DeliveryModule } from './modules/delivery/delivery.module';
 
 import { AuthModule } from './modules/auth/auth.module';
+import { ReportsModule } from './modules/reports/reports.module';
 
 @Module({
   imports: [
@@ -33,6 +34,7 @@ import { AuthModule } from './modules/auth/auth.module';
     AnalyticsModule,
     DeliveryModule,
     AuthModule,
+    ReportsModule,
   ],
 })
 export class AppModule {}
